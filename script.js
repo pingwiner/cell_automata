@@ -1,11 +1,13 @@
 const width = 32
-const height = 16;
+const height = 32;
 const cellSize = 10;
+const tickInterval = 500; 
 const canvas = document.getElementById("canvas");
 const startButton = document.getElementById("start");
 const clearButton = document.getElementById("clear");
 const randomButton = document.getElementById("random");
 const algorithm = document.getElementById("algorithm");
+const ruleInput = document.getElementById("rule");
 
 let field = Array(width * height);
 let interval = null;
@@ -13,7 +15,9 @@ let selectedAlgorithm = conways_game_of_life;
 let algos = [
 	conways_game_of_life, 
 	function() { rule(110) },
-	function() { rule(54) }
+	function() { rule(54) },
+	function() { rule(18) },
+	function() { rule(22) }	
 ];
 
 function getRandom() {
@@ -39,7 +43,7 @@ function init() {
 	startButton.addEventListener("click", function(e) {
 		if (interval == null) {
 			setAlgorithm();
-			interval = setInterval(tick, 1000);
+			interval = setInterval(tick, tickInterval);
 			startButton.innerText= "Stop";
 		} else {
 			clearInterval(interval);
@@ -70,7 +74,7 @@ function draw() {
 		for (let i = 0; i < height; i+= 1) {
 			for (let j = 0; j < width; j+= 1) {
 				if (field[i * width + j] == 1) {
-					ctx.fillStyle = "blue";
+					ctx.fillStyle = "black";
 				} else {
 					ctx.fillStyle = "grey";
 				}
@@ -100,9 +104,17 @@ function tick() {
 }
 
 function setAlgorithm() {
-	let value = algorithm.value;
-	index = parseInt(value);
-	selectedAlgorithm = algos[index];
+	let ruleText = ruleInput.value.trim();  
+	let ruleNum = parseInt(ruleText);
+	if (isNaN(ruleNum)) {
+		let value = algorithm.value;
+		index = parseInt(value);
+		selectedAlgorithm = algos[index];
+	} else {
+		selectedAlgorithm = function() {
+			rule(ruleNum);
+		}
+	}
 }
 
 function conways_game_of_life() {
